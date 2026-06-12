@@ -1,0 +1,4 @@
+doc\kub\cli\api\PatientAPI.class
+doc\kub\cli\DbConnection.class
+doc\kub\cli\App.class
+doc\kub\cli\model\Patient.class

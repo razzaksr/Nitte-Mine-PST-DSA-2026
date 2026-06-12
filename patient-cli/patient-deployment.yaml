@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: patient-cli
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: patient-cli
+
+  template:
+    metadata:
+      labels:
+        app: patient-cli
+
+    spec:
+      containers:
+      - name: patient-cli
+
+        image: patient-cli:v1

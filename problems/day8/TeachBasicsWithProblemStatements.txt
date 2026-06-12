@@ -1,0 +1,195 @@
+Great — let’s map **existing platform problems** directly to your topics and provide **Java solutions** so you can run a 4‑hour hands‑on session without inventing new statements.  
+
+---
+
+## 🔹 Hour 1: File Handling, BufferedReader, FileWriter
+**Problem:** HackerRank – *Java End‑of‑File*  
+- Reads input until EOF and prints line numbers.  
+- Teaches `BufferedReader` and file‑like input handling.  
+
+**Java Solution:**
+```java
+import java.io.*;
+
+public class EndOfFile {
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String line;
+        int count = 1;
+        while((line = br.readLine()) != null){
+            System.out.println(count + " " + line);
+            count++;
+        }
+    }
+}
+```
+
+---
+
+## 🔹 Hour 2: Serialization Basics
+**Problem:** HackerEarth – *Serialize and Deserialize Student Object* (common assignment style).  
+- Save a `Student` object to file, then restore it.  
+
+**Java Solution:**
+```java
+import java.io.*;
+
+class Student implements Serializable {
+    String name;
+    int roll;
+    Student(String n, int r){ name=n; roll=r; }
+}
+
+public class SerializeDemo {
+    public static void main(String[] args) throws Exception {
+        Student s = new Student("Arun", 101);
+
+        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("student.ser"));
+        oos.writeObject(s);
+        oos.close();
+
+        ObjectInputStream ois = new ObjectInputStream(new FileInputStream("student.ser"));
+        Student s2 = (Student) ois.readObject();
+        ois.close();
+
+        System.out.println("Restored Student: " + s2.name + " Roll: " + s2.roll);
+    }
+}
+```
+
+---
+
+## 🔹 Hour 3: Threads + Runnable
+**Problem:** LeetCode 1114 – *Print in Order*  
+- Three threads must print “first”, “second”, “third” in order.  
+- Teaches `Runnable` and synchronization basics.  
+
+**Java Solution:**
+```java
+import java.util.concurrent.CountDownLatch;
+
+class Foo {
+    private CountDownLatch latch1 = new CountDownLatch(1);
+    private CountDownLatch latch2 = new CountDownLatch(1);
+
+    public void first(Runnable printFirst) throws InterruptedException {
+        printFirst.run();
+        latch1.countDown();
+    }
+
+    public void second(Runnable printSecond) throws InterruptedException {
+        latch1.await();
+        printSecond.run();
+        latch2.countDown();
+    }
+
+    public void third(Runnable printThird) throws InterruptedException {
+        latch2.await();
+        printThird.run();
+    }
+}
+
+public class PrintInOrder {
+    public static void main(String[] args) {
+        Foo foo = new Foo();
+        Runnable r1 = () -> System.out.println("first");
+        Runnable r2 = () -> System.out.println("second");
+        Runnable r3 = () -> System.out.println("third");
+
+        new Thread(() -> { try { foo.first(r1); } catch(Exception e){} }).start();
+        new Thread(() -> { try { foo.second(r2); } catch(Exception e){} }).start();
+        new Thread(() -> { try { foo.third(r3); } catch(Exception e){} }).start();
+    }
+}
+```
+
+---
+
+## 🔹 Hour 4: Synchronization
+**Problem:** LeetCode 1195 – *FizzBuzz Multithreaded*  
+- Multiple threads print numbers with FizzBuzz rules.  
+- Teaches synchronization with semaphores.  
+
+**Java Solution:**
+```java
+import java.util.concurrent.Semaphore;
+
+class FizzBuzz {
+    private int n;
+    private int current = 1;
+    private Semaphore sem = new Semaphore(1);
+
+    public FizzBuzz(int n) { this.n = n; }
+
+    public void fizz(Runnable printFizz) throws InterruptedException {
+        while(true){
+            sem.acquire();
+            if(current > n){ sem.release(); break; }
+            if(current % 3 == 0 && current % 5 != 0){
+                printFizz.run();
+                current++;
+            }
+            sem.release();
+        }
+    }
+
+    public void buzz(Runnable printBuzz) throws InterruptedException {
+        while(true){
+            sem.acquire();
+            if(current > n){ sem.release(); break; }
+            if(current % 5 == 0 && current % 3 != 0){
+                printBuzz.run();
+                current++;
+            }
+            sem.release();
+        }
+    }
+
+    public void fizzbuzz(Runnable printFizzBuzz) throws InterruptedException {
+        while(true){
+            sem.acquire();
+            if(current > n){ sem.release(); break; }
+            if(current % 15 == 0){
+                printFizzBuzz.run();
+                current++;
+            }
+            sem.release();
+        }
+    }
+
+    public void number(Runnable printNumber) throws InterruptedException {
+        while(true){
+            sem.acquire();
+            if(current > n){ sem.release(); break; }
+            if(current % 3 != 0 && current % 5 != 0){
+                printNumber.run();
+                current++;
+            }
+            sem.release();
+        }
+    }
+}
+
+public class FizzBuzzDemo {
+    public static void main(String[] args) {
+        FizzBuzz fb = new FizzBuzz(15);
+
+        new Thread(() -> { try { fb.fizz(() -> System.out.println("fizz")); } catch(Exception e){} }).start();
+        new Thread(() -> { try { fb.buzz(() -> System.out.println("buzz")); } catch(Exception e){} }).start();
+        new Thread(() -> { try { fb.fizzbuzz(() -> System.out.println("fizzbuzz")); } catch(Exception e){} }).start();
+        new Thread(() -> { try { fb.number(() -> System.out.println(Thread.currentThread().getName()+" prints number")); } catch(Exception e){} }).start();
+    }
+}
+```
+
+---
+
+## 🎯 Wrap‑Up
+- **Hour 1:** HackerRank File Handling → `BufferedReader`, `FileWriter`.  
+- **Hour 2:** HackerEarth Serialization → `Serializable`.  
+- **Hour 3:** LeetCode 1114 → Threads + Runnable.  
+- **Hour 4:** LeetCode 1195 → Synchronization.  
+
+This way, you use **existing platform problems** (not custom ones), keep difficulty **easy**, and make it **fun** with relatable contexts.  
+
+Would you like me to **bundle these into a single “training worksheet”** with problem links, code skeletons, and expected outputs so you can hand it directly to your trainees?
